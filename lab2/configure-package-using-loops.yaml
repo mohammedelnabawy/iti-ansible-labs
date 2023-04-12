@@ -1,0 +1,33 @@
+- name: configure-nginx-with-tags
+  hosts: all
+  # vars:
+  #   - package_name: nginx
+  #   - package_state: present
+  vars_files: ./vars.yaml
+  tasks:
+  - name: update-apt
+    tags: update
+    ansible.builtin.apt:
+      update_cache: true
+
+  - name: install-package
+    tags: install
+    ansible.builtin.package:
+      name: "{{item.name}}"
+      state: "present"
+    loop:
+      "{{package_list}}"
+ 
+  - name: convert-to-state
+    tags: convert
+    ansible.builtin.package:
+      name: "{{item.name}}"
+      state: "{{item.state}}"
+    loop:
+      "{{package_list}}"
+
+
+  # - name: display-facts
+  #   tags: facts
+  #   ansible.builtin.debug:
+  #     var: ansible_facts
